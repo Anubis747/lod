@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live or Dead</title>
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://isitup.org https://cdnjs.buymeacoffee.com; 
+    connect-src https://isitup.org;
+    style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+    font-src 'self' https://cdnjs.cloudflare.com;
+  ">
+
+  <!-- FontAwesome -->
+  <link 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+    rel="stylesheet" />
+
+  <style>
+    /* Color palette */
+    :root { --primary: #007BFF; --up: #28a745; --down: #dc3545; --bg: #f8f9fa; --text: #212529; }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); margin:0; padding:1rem; display:flex; flex-direction:column; align-items:center; }
+    h1 { margin-bottom:0.5rem; }
+    #hint { margin:0 0 1rem; font-style:italic; color:#6c757d; }
+    select,input,button { font-size:1rem; padding:0.5rem; margin:0.5rem 0; }
+    button { background: var(--primary); border:none; color:#fff; border-radius:4px; cursor:pointer; }
+    button:disabled { opacity:0.6; cursor:not-allowed; }
+    .result-card { margin-top:1rem; padding:1rem; border-radius:6px; color:#fff; display:none; align-items:center; justify-content:center; gap:0.5rem; width:100%; max-width:400px; animation:fadeIn 0.3s ease-in-out; }
+    .up { background:var(--up); }
+    .down { background:var(--down); }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+    .ad-slot { width:100%; max-width:400px; margin:1rem 0; height:90px; background:#e9ecef; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:0.9rem; border:1px dashed #6c757d; }
+    .bmc-button { margin:1rem 0; }
+  </style>
+</head>
+<body>
+
+  <div class="ad-slot">Your Google AdSense Top Banner Here</div>
+
+  <h1>Live or Dead</h1>
+  <p id="hint">Type a URL below to see if it is live or dead.</p>
+
+  <select id="langSelect">
+    <option value="en">English</option>
+    <option value="pt">Português</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+  </select>
+
+  <input id="siteUrl" placeholder="e.g. example.com" style="width:100%; max-width:400px;" />
+  <button id="checkBtn">Check</button>
+
+  <div id="result" class="result-card">
+    <i id="icon" class="fa-solid fa-spinner fa-spin"></i>
+    <span id="msg">Checking…</span>
+  </div>
+
+  <div class="ad-slot">Google AdSense Inline Ad Here</div>
+
+  <!-- Buy Me A Coffee dynamically loaded -->
+  <div class="bmc-button" id="bmcContainer"></div>
+
+  <div class="ad-slot">Your Google AdSense Footer Ad Here</div>
+
+  <script>
+    // Global error handler to suppress script errors
+    window.onerror = function(msg, src, line, col, error) {
+      console.warn('Suppressed script error:', msg);
+      return true;
+    };
+
+    // Load BuyMeACoffee widget dynamically with error handling
+    (function() {
+      try {
+        var s = document.createElement('script');
+        s.src = 'https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js';
+        s.async = true;
+        s.onerror = function() { console.warn('BuyMeACoffee widget failed to load'); };
+        s.setAttribute('data-name', 'bmc-widget');
+        s.setAttribute('data-cfasync', 'false');
+        s.setAttribute('data-id', 'YOUR_BMC_ID');
+        s.setAttribute('data-description', 'Enjoying this tool? Buy me a coffee! ☕');
+        s.setAttribute('data-message', 'Thanks for your support!');
+        s.setAttribute('data-color', '#FFDD00');
+        s.setAttribute('data-position', 'Right');
+        s.setAttribute('data-x_margin', '18');
+        s.setAttribute('data-y_margin', '18');
+        document.getElementById('bmcContainer').appendChild(s);
+      } catch (e) {
+        console.warn('Error injecting BMC script:', e);
+      }
+    })();
+
+    // Localization data
+    const data = {
+      en: { hint:'Type a URL below to see if it is live or dead.', check:'Check', invalid:'Invalid hostname.', placeholder:'e.g. example.com', up:'is UP', down:'is DOWN', network:'Network error.' },
+      pt: { hint:'Digite uma URL abaixo para saber se está vivo ou morto.', check:'Checar', invalid:'Host inválido.', placeholder:'ex: exemplo.com', up:'está UP', down:'está DOWN', network:'Erro de rede.' },
+      es: { hint:'Escribe una URL abajo para saber si está vivo o muerto.', check:'Comprobar', invalid:'Host inválido.', placeholder:'ej: ejemplo.com', up:'está UP', down:'está DOWN', network:'Error de red.' },
+      fr: { hint:'Entrez une URL pour savoir si elle est vivante ou morte.', check:'Vérifier', invalid:'Nom d’hôte non valide.', placeholder:'ex: exemple.com', up:'est UP', down:'est DOWN', network:'Erreur réseau.' }
+    };
+
+    let currentLang = (function() {
+      const nav = navigator.language || 'en';
+      if(nav.startsWith('pt')) return 'pt';
+      if(nav.startsWith('es')) return 'es';
+      if(nav.startsWith('fr')) return 'fr';
+      return 'en';
+    })();
+
+    const sel = document.getElementById('langSelect');
+    const btn = document.getElementById('checkBtn');
+    const input = document.getElementById('siteUrl');
+    const card = document.getElementById('result');
+    const icon = document.getElementById('icon');
+    const msg = document.getElementById('msg');
+    const hintEl = document.getElementById('hint');
+
+    function isValidHost(host) {
+      return /^[a-zA-Z0-9\.\-]+(:\d+)?$/.test(host);
+    }
+
+    function updateUI() {
+      const cfg = data[currentLang];
+      hintEl.textContent = cfg.hint;
+      btn.textContent = cfg.check;
+      input.placeholder = cfg.placeholder;
+      msg.textContent = cfg.check + '…';
+    }
+
+    sel.value = currentLang;
+    sel.addEventListener('change', function(e){ currentLang = e.target.value; updateUI(); });
+
+    let busy = false;
+    btn.addEventListener('click', async function() {
+      if(busy) return;
+      busy = true;
+      setTimeout(function(){ busy = false; }, 2000);
+
+      const cfg = data[currentLang];
+      const raw = input.value.trim();
+      if(!isValidHost(raw)) { alert(cfg.invalid); return; }
+      const site = raw.startsWith('http') ? raw : 'https://' + raw;
+
+      card.style.display = 'flex';
+      card.classList.remove('up','down');
+      icon.className = 'fa-solid fa-spinner fa-spin';
+      msg.textContent = cfg.check + '…';
+
+      try {
+        const res = await fetch('https://isitup.org/' + encodeURIComponent(site) + '.json');
+        const d = await res.json();
+        if(d.status_code === 1) {
+          card.classList.add('up');
+          icon.className = 'fa-solid fa-circle-check';
+          msg.textContent = site + ' ' + cfg.up + ' (' + Math.round(d.response_time) + ' ms)';
+        } else {
+          card.classList.add('down');
+          icon.className = 'fa-solid fa-circle-xmark';
+          msg.textContent = site + ' ' + cfg.down;
+        }
+      } catch(e) {
+        card.classList.add('down');
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        msg.textContent = cfg.network;
+      }
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>
