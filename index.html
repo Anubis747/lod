@@ -211,7 +211,7 @@
           fr: { up: `🚀 ${host} est EN LIGNE ! (${secs}s)`, down: `❌ ${host} est HORS LIGNE !` }
         };
 
-        if (d.status >= 200 && d.status < 400) {
+        if (d.status < 400) {
           card.classList.add('up');
           icon.className = 'fa-solid fa-circle-check';
           msg.textContent = texts[currentLang].up;
