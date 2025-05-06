@@ -1,57 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Live or Dead</title>
 
-  <!-- Content Security Policy -->
+  <!-- 1) CSP -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://api.allorigins.win https://pagead2.googlesyndication.com;
-    connect-src https://api.allorigins.win;
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com;
+    connect-src 'self';
     style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
     font-src 'self' https://cdnjs.cloudflare.com;
   ">
 
-  <!-- FontAwesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <!-- 2) AdSense Loader Global -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9273959048665563"
+    crossorigin="anonymous"></script>
 
-  <!-- Google AdSense top-level script -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9273959048665563" crossorigin="anonymous"></script>
+  <!-- 3) FontAwesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
 
+  <!-- 4) Styles -->
   <style>
-    :root { --primary: #007BFF; --up: #28a745; --down: #dc3545; --bg: #f8f9fa; --text: #212529; }
-    * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); margin:0; padding:1rem; display:flex; flex-direction:column; align-items:center; }
-    h1 { margin-bottom:0.5rem; }
-    #hint { margin:0 0 1rem; font-style:italic; color:#6c757d; }
-    select, input, button { font-size:1rem; padding:0.5rem; margin:0.5rem 0; }
-    button { background: var(--primary); border:none; color:#fff; border-radius:4px; cursor:pointer; }
-    button:disabled { opacity:0.6; cursor:not-allowed; }
-    .result-card { margin-top:1rem; padding:1rem; border-radius:6px; color:#fff; display:none; align-items:center; justify-content:center; gap:0.5rem; width:100%; max-width:400px; animation:fadeIn 0.3s ease-in-out; }
-    .up { background:var(--up); }
-    .down { background:var(--down); }
-    @keyframes fadeIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
-    .ad-slot { width:100%; max-width:400px; margin:1rem 0; height:90px; background:#e9ecef; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:0.9rem; border:1px dashed #6c757d; }
+    body {
+      font-family: sans-serif;
+      max-width: 400px;
+      margin: 3rem auto;
+      text-align: center;
+    }
+    select, input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+    .result-card {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      color: white;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .up   { background: #28a745; }
+    .down { background: #dc3545; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
-  <div class="ad-slot">
-    <!-- Google AdSense Top Banner -->
-    <ins class="adsbygoogle"
-         style="display:block; max-width:400px; margin:0 auto;"
-         data-ad-client="ca-pub-9273959048665563"
-         data-ad-slot="1111111111"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+  <!-- === Top AdSense Banner === -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-9273959048665563"
+       data-ad-slot="9102667654"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
   <h1>Live or Dead</h1>
-  <p id="hint">Type a URL below to check if it is up or down.</p>
 
+  <!-- Language -->
   <select id="langSelect">
     <option value="en">English</option>
     <option value="pt">Português</option>
@@ -59,127 +79,121 @@
     <option value="fr">Français</option>
   </select>
 
-  <input id="siteUrl" placeholder="e.g. example.com" style="width:100%; max-width:400px;" />
+  <!-- Hint -->
+  <p id="hint">Digite uma URL abaixo para verificar se ela está online ou offline.</p>
+
+  <!-- Input + button -->
+  <input id="siteUrl" placeholder="ex: exemplo.com" style="width:70%;" />
   <button id="checkBtn">Check</button>
 
+  <!-- Results -->
   <div id="result" class="result-card">
     <i id="icon" class="fa-solid fa-spinner fa-spin"></i>
     <span id="msg">Checking…</span>
   </div>
 
-  <div class="ad-slot">
-    <!-- Google AdSense Inline Ad -->
-    <ins class="adsbygoogle"
-         style="display:block; max-width:400px; margin:0 auto;"
-         data-ad-client="ca-pub-9273959048665563"
-         data-ad-slot="2222222222"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
-
-  <div class="ad-slot">
-    <!-- Google AdSense Footer Ad -->
-    <ins class="adsbygoogle"
-         style="display:block; max-width:400px; margin:0 auto;"
-         data-ad-client="ca-pub-9273959048665563"
-         data-ad-slot="3333333333"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
-
+  <!-- JS -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const data = {
-        en: { hint:'Type a URL below to check if it is up or down.', check:'Check', invalid:'Invalid hostname.', placeholder:'e.g. example.com', up:'is UP', down:'is DOWN', network:'Network error.' },
-        pt: { hint:'Digite uma URL abaixo para verificar se ela está online ou offline.', check:'Checar', invalid:'Host inválido.', placeholder:'ex: exemplo.com', up:'está UP', down:'está DOWN', network:'Erro de rede.' },
-        es: { hint:'Escriba una URL abajo para verificar si está en línea o sin conexión.', check:'Comprobar', invalid:'Host inválido.', placeholder:'ej: ejemplo.com', up:'está UP', down:'está DOWN', network:'Error de red.' },
-        fr: { hint:'Entrez une URL ci-dessous para verificar si ela está em linha ou hors ligne.', check:'Vérifier', invalid:'Nom d’hôte não válido.', placeholder:'ex: exemplo.com', up:'est UP', down:'est DOWN', network:'Erreur réseau.' }
-      };
-
-      const sel = document.getElementById('langSelect');
-      const btn = document.getElementById('checkBtn');
-      const input = document.getElementById('siteUrl');
-      const hintEl = document.getElementById('hint');
-      const icon = document.getElementById('icon');
-      const msg = document.getElementById('msg');
-      const card = document.getElementById('result');
-
-      let currentLang = navigator.language.startsWith('pt') ? 'pt'
-                      : navigator.language.startsWith('es') ? 'es'
-                      : navigator.language.startsWith('fr') ? 'fr'
-                      : 'en';
-      sel.value = currentLang;
-
-      function updateUI() {
-        const cfg = data[currentLang];
-        hintEl.textContent = cfg.hint;
-        btn.textContent = cfg.check;
-        input.placeholder = cfg.placeholder;
-        msg.textContent = cfg.check + '…';
+    const data = {
+      en: {
+        hint: 'Type a URL below to see if it is up or down.',
+        check: 'Check',
+        invalid: 'Invalid hostname.',
+        placeholder: 'e.g. example.com',
+        network: 'Network error.'
+      },
+      pt: {
+        hint: 'Digite uma URL abaixo para verificar se ela está online ou offline.',
+        check: 'Checar',
+        invalid: 'Host inválido.',
+        placeholder: 'ex: exemplo.com',
+        network: 'Erro de rede.'
+      },
+      es: {
+        hint: 'Escriba una URL abajo para verificar si está en línea o sin conexión.',
+        check: 'Comprobar',
+        invalid: 'Host inválido.',
+        placeholder: 'ej: ejemplo.com',
+        network: 'Error de red.'
+      },
+      fr: {
+        hint: 'Entrez une URL ci-dessous pour vérifier si elle est en ligne ou hors ligne.',
+        check: 'Vérifier',
+        invalid: 'Nom d’hôte non valide.',
+        placeholder: 'ex: exemple.com',
+        network: 'Erreur réseau.'
       }
+    };
 
-      function isValidHost(h) {
-        return /^[a-zA-Z0-9\.\-]+(:\d+)?$/.test(h);
-      }
+    let currentLang = 'pt';
+    const select = document.getElementById('langSelect');
+    const hintEl = document.getElementById('hint');
+    const btn    = document.getElementById('checkBtn');
+    const input  = document.getElementById('siteUrl');
+    const card   = document.getElementById('result');
+    const icon   = document.getElementById('icon');
+    const msg    = document.getElementById('msg');
 
-      sel.addEventListener('change', () => { currentLang = sel.value; updateUI(); });
+    function updateUI() {
+      const cfg = data[currentLang];
+      hintEl.textContent    = cfg.hint;
+      btn.textContent       = cfg.check;
+      input.placeholder     = cfg.placeholder;
+      card.style.display    = 'none';
+    }
+
+    select.addEventListener('change', e => {
+      currentLang = e.target.value;
       updateUI();
-
-      let busy = false;
-      btn.addEventListener('click', async () => {
-        if (busy) return;
-        busy = true;
-        setTimeout(() => busy = false, 2000);
-
-        const cfg = data[currentLang];
-        const raw = input.value.trim();
-        if (!isValidHost(raw)) { alert(cfg.invalid); return; }
-        const site = raw.startsWith('http') ? raw : 'https://' + raw;
-
-        card.style.display = 'flex';
-        card.classList.remove('up','down');
-        icon.className = 'fa-solid fa-spinner fa-spin';
-        msg.textContent = cfg.check + '…';
-
-                // Use AllOrigins to proxy call to check-host.net API
-        const checkUrl = 'https://check-host.net/check-http?host=' + encodeURIComponent(site) + '&max_nodes=1';
-        const proxyCheckUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(checkUrl);
-        try {
-          // Step 1: initiate HTTP check
-          const res1 = await fetch(proxyCheckUrl);
-          const json1 = await res1.json();
-          const requestId = json1.request_id;
-          if (!requestId) throw new Error('Invalid response from check-host');
-          // Step 2: fetch result
-          const resultUrl = 'https://check-host.net/check-result/' + encodeURIComponent(requestId);
-          const proxyResultUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(resultUrl);
-          const res2 = await fetch(proxyResultUrl);
-          const resultJson = await res2.json();
-          // get first node result
-          const nodes = Object.keys(resultJson);
-          if (nodes.length === 0) throw new Error('No result node');
-          const record = resultJson[nodes[0]][0];
-          // record format: [successFlag, responseTime, message, statusCode, ip]
-          const success = record[0] === 1;
-          const timeMs = Math.round(record[1] * 1000);
-          if (success) {
-            card.classList.add('up');
-            icon.className = 'fa-solid fa-circle-check';
-            msg.textContent = `${site} ${cfg.up} (${timeMs} ms)`;
-          } else {
-            card.classList.add('down');
-            icon.className = 'fa-solid fa-circle-xmark';
-            msg.textContent = `${site} ${cfg.down}`;
-          }
-        } catch (e) {
-          card.classList.add('down');
-          icon.className = 'fa-solid fa-triangle-exclamation';
-          msg.textContent = cfg.network;
-        }
-      });
     });
+
+    function isValidHost(h) {
+      return /^[a-zA-Z0-9.\-]+(:\d+)?$/.test(h);
+    }
+
+    let busy = false;
+    btn.addEventListener('click', async () => {
+      if (busy) return;
+      busy = true;
+      setTimeout(() => busy = false, 2000);
+
+      const raw = input.value.trim();
+      if (!isValidHost(raw)) {
+        alert(data[currentLang].invalid);
+        return;
+      }
+      const site = raw.startsWith('http') ? raw : 'https://' + raw;
+
+      //spinner
+      card.style.display = 'flex';
+      card.classList.remove('up','down');
+      icon.className = 'fa-solid fa-spinner fa-spin';
+      msg.textContent = data[currentLang].check + '…';
+
+      try {
+        const res = await fetch(`/api/check?url=${encodeURIComponent(site)}`);
+        const d   = await res.json();
+        if (d.error) throw new Error(d.error);
+
+        if (d.status >= 200 && d.status < 400) {
+          card.classList.add('up');
+          icon.className = 'fa-solid fa-circle-check';
+          msg.textContent = `${site} ${data[currentLang].check === 'Check' ? 'is UP' : ''} ${d.time} ms`;
+        } else {
+          card.classList.add('down');
+          icon.className = 'fa-solid fa-circle-xmark';
+          msg.textContent = `${site} ${data[currentLang].check === 'Check' ? 'is DOWN' : ''}`;
+        }
+      } catch (e) {
+        card.classList.add('down');
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        msg.textContent = data[currentLang].network;
+      }
+    });
+
+    // 
+    updateUI();
   </script>
+
 </body>
 </html>
