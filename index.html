@@ -4,46 +4,44 @@
   <meta charset="UTF-8">
   <title>Live or Dead</title>
 
-  <!-- 1) CSP -->
   <meta http-equiv="Content-Security-Policy" content="
-  default-src 'self';
-  script-src 'self' 'unsafe-inline'
-    https://pagead2.googlesyndication.com
-    https://*.googlesyndication.com
-    https://*.adtrafficquality.google;
-  connect-src 'self'
-    https://*.adtrafficquality.google
-    https://pagead2.googlesyndication.com;
-  style-src 'self' 'unsafe-inline'
-    https://cdnjs.cloudflare.com;
-  font-src 'self'
-    https://cdnjs.cloudflare.com;
-  frame-src 'self'
-    https://pagead2.googlesyndication.com
-    https://*.adtrafficquality.google;
-  fenced-frame-src 'self'
-    https://pagead2.googlesyndication.com
-    https://*.adtrafficquality.google;
-  img-src 'self' data:
-    https://*.googlesyndication.com
-    https://*.adtrafficquality.google;
-  object-src 'none';
-  base-uri 'self';
-  form-action 'self';
-">
+    default-src 'self';
+    script-src 'self' 'unsafe-inline'
+      https://pagead2.googlesyndication.com
+      https://*.googlesyndication.com
+      https://*.adtrafficquality.google;
+    connect-src 'self'
+      https://*.adtrafficquality.google
+      https://pagead2.googlesyndication.com;
+    style-src 'self' 'unsafe-inline'
+      https://cdnjs.cloudflare.com;
+    font-src 'self'
+      https://cdnjs.cloudflare.com;
+    frame-src 'self'
+      https://pagead2.googlesyndication.com
+      https://*.adtrafficquality.google;
+    fenced-frame-src 'self'
+      https://pagead2.googlesyndication.com
+      https://*.adtrafficquality.google;
+    img-src 'self' data:
+      https://*.googlesyndication.com
+      https://*.adtrafficquality.google;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
 
-  <!-- 2) AdSense Loader Global -->
+  <!-- AdSense loader -->
   <script async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9273959048665563"
     crossorigin="anonymous"></script>
 
-  <!-- 3) FontAwesome -->
+  <!-- FontAwesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   />
 
-  <!-- 4) Styles -->
   <style>
     body {
       font-family: sans-serif;
@@ -51,7 +49,9 @@
       margin: 3rem auto;
       text-align: center;
     }
-    select, input, button {
+    label, select, input, button {
+      display: block;
+      width: 100%;
       padding: 0.5rem;
       font-size: 1rem;
       margin: 0.5rem 0;
@@ -77,20 +77,19 @@
 </head>
 <body>
 
-  <!-- === Top AdSense Banner === -->
+  <!-- Top AdSense Banner -->
   <ins class="adsbygoogle"
        style="display:block"
        data-ad-client="ca-pub-9273959048665563"
        data-ad-slot="9102667654"
        data-ad-format="auto"
        data-full-width-responsive="true"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
   <h1>Live or Dead</h1>
 
-  <!-- Language -->
+  <!-- Language selector with label -->
+  <label id="langLabel" for="langSelect">Escolha outro idioma:</label>
   <select id="langSelect">
     <option value="en">English</option>
     <option value="pt">Português</option>
@@ -101,20 +100,20 @@
   <!-- Hint -->
   <p id="hint">Digite uma URL abaixo para verificar se ela está online ou offline.</p>
 
-  <!-- Input + button -->
-  <input id="siteUrl" placeholder="ex: exemplo.com" style="width:70%;" />
+  <!-- Input & button -->
+  <input id="siteUrl" placeholder="ex: exemplo.com" />
   <button id="checkBtn">Check</button>
 
-  <!-- Results -->
+  <!-- Result card -->
   <div id="result" class="result-card">
     <i id="icon" class="fa-solid fa-spinner fa-spin"></i>
     <span id="msg">Checking…</span>
   </div>
 
-  <!-- JS -->
   <script>
     const data = {
       en: {
+        langLabel: 'Choose another language:',
         hint: 'Type a URL below to see if it is up or down.',
         check: 'Check',
         invalid: 'Invalid hostname.',
@@ -122,6 +121,7 @@
         network: 'Network error.'
       },
       pt: {
+        langLabel: 'Escolha outro idioma:',
         hint: 'Digite uma URL abaixo para verificar se ela está online ou offline.',
         check: 'Checar',
         invalid: 'Host inválido.',
@@ -129,6 +129,7 @@
         network: 'Erro de rede.'
       },
       es: {
+        langLabel: 'Elige otro idioma:',
         hint: 'Escriba una URL abajo para verificar si está en línea o sin conexión.',
         check: 'Comprobar',
         invalid: 'Host inválido.',
@@ -136,6 +137,7 @@
         network: 'Error de red.'
       },
       fr: {
+        langLabel: 'Choisissez une autre langue :',
         hint: 'Entrez une URL ci-dessous pour vérifier si elle est en ligne ou hors ligne.',
         check: 'Vérifier',
         invalid: 'Nom d’hôte non valide.',
@@ -144,20 +146,27 @@
       }
     };
 
-    let currentLang = 'pt';
-    const select = document.getElementById('langSelect');
-    const hintEl = document.getElementById('hint');
-    const btn    = document.getElementById('checkBtn');
-    const input  = document.getElementById('siteUrl');
-    const card   = document.getElementById('result');
-    const icon   = document.getElementById('icon');
-    const msg    = document.getElementById('msg');
+    let currentLang = navigator.language.startsWith('pt') ? 'pt'
+                     : navigator.language.startsWith('es') ? 'es'
+                     : navigator.language.startsWith('fr') ? 'fr'
+                     : 'en';
+
+    const langLabel = document.getElementById('langLabel');
+    const select    = document.getElementById('langSelect');
+    const hintEl    = document.getElementById('hint');
+    const btn       = document.getElementById('checkBtn');
+    const input     = document.getElementById('siteUrl');
+    const card      = document.getElementById('result');
+    const icon      = document.getElementById('icon');
+    const msg       = document.getElementById('msg');
 
     function updateUI() {
       const cfg = data[currentLang];
+      langLabel.textContent = cfg.langLabel;
       hintEl.textContent    = cfg.hint;
       btn.textContent       = cfg.check;
       input.placeholder     = cfg.placeholder;
+      select.value          = currentLang;
       card.style.display    = 'none';
     }
 
@@ -183,7 +192,6 @@
       }
       const site = raw.startsWith('http') ? raw : 'https://' + raw;
 
-      // spinner
       card.style.display = 'flex';
       card.classList.remove('up', 'down');
       icon.className = 'fa-solid fa-spinner fa-spin';
@@ -192,7 +200,7 @@
       try {
         const res = await fetch(`/api/check?url=${encodeURIComponent(site)}`);
         const d   = await res.json();
-        if (d.error) throw new Error(d.error);
+        if (d.error) throw new Error();
 
         const host = new URL(site).hostname;
         const secs = (d.time / 1000).toFixed(1);
@@ -212,14 +220,13 @@
           icon.className = 'fa-solid fa-circle-xmark';
           msg.textContent = texts[currentLang].down;
         }
-      } catch (e) {
+      } catch {
         card.classList.add('down');
         icon.className = 'fa-solid fa-triangle-exclamation';
         msg.textContent = data[currentLang].network;
       }
     });
 
-    // inicializa
     updateUI();
   </script>
 
