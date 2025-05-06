@@ -143,18 +143,35 @@
         icon.className = 'fa-solid fa-spinner fa-spin';
         msg.textContent = cfg.check + '…';
 
-        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://isitup.org/' + site + '.json');
+                // Use AllOrigins to proxy call to check-host.net API
+        const checkUrl = 'https://check-host.net/check-http?host=' + encodeURIComponent(site) + '&max_nodes=1';
+        const proxyCheckUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(checkUrl);
         try {
-          const res = await fetch(proxyUrl);
-          const d = await res.json();
-          if (d.status_code === 1) {
+          // Step 1: initiate HTTP check
+          const res1 = await fetch(proxyCheckUrl);
+          const json1 = await res1.json();
+          const requestId = json1.request_id;
+          if (!requestId) throw new Error('Invalid response from check-host');
+          // Step 2: fetch result
+          const resultUrl = 'https://check-host.net/check-result/' + encodeURIComponent(requestId);
+          const proxyResultUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(resultUrl);
+          const res2 = await fetch(proxyResultUrl);
+          const resultJson = await res2.json();
+          // get first node result
+          const nodes = Object.keys(resultJson);
+          if (nodes.length === 0) throw new Error('No result node');
+          const record = resultJson[nodes[0]][0];
+          // record format: [successFlag, responseTime, message, statusCode, ip]
+          const success = record[0] === 1;
+          const timeMs = Math.round(record[1] * 1000);
+          if (success) {
             card.classList.add('up');
             icon.className = 'fa-solid fa-circle-check';
-            msg.textContent = site + ' ' + cfg.up + ' (' + Math.round(d.response_time) + ' ms)';
+            msg.textContent = `${site} ${cfg.up} (${timeMs} ms)`;
           } else {
             card.classList.add('down');
             icon.className = 'fa-solid fa-circle-xmark';
-            msg.textContent = site + ' ' + cfg.down;
+            msg.textContent = `${site} ${cfg.down}`;
           }
         } catch (e) {
           card.classList.add('down');
