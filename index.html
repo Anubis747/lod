@@ -164,9 +164,9 @@
       }
       const site = raw.startsWith('http') ? raw : 'https://' + raw;
 
-      //spinner
+      // spinner
       card.style.display = 'flex';
-      card.classList.remove('up','down');
+      card.classList.remove('up', 'down');
       icon.className = 'fa-solid fa-spinner fa-spin';
       msg.textContent = data[currentLang].check + '…';
 
@@ -175,14 +175,23 @@
         const d   = await res.json();
         if (d.error) throw new Error(d.error);
 
+        const host = new URL(site).hostname;
+        const secs = (d.time / 1000).toFixed(1);
+        const texts = {
+          en: { up: `🚀 ${host} is LIVE! (${secs}s)`, down: `❌ ${host} is DOWN!` },
+          pt: { up: `🚀 ${host} está NO AR! (${secs}s)`, down: `❌ ${host} está OFFLINE!` },
+          es: { up: `🚀 ${host} está EN LÍNEA! (${secs}s)`, down: `❌ ${host} está CAÍDO!` },
+          fr: { up: `🚀 ${host} est EN LIGNE ! (${secs}s)`, down: `❌ ${host} est HORS LIGNE !` }
+        };
+
         if (d.status >= 200 && d.status < 400) {
           card.classList.add('up');
           icon.className = 'fa-solid fa-circle-check';
-          msg.textContent = `${site} ${data[currentLang].check === 'Check' ? 'is UP' : ''} ${d.time} ms`;
+          msg.textContent = texts[currentLang].up;
         } else {
           card.classList.add('down');
           icon.className = 'fa-solid fa-circle-xmark';
-          msg.textContent = `${site} ${data[currentLang].check === 'Check' ? 'is DOWN' : ''}`;
+          msg.textContent = texts[currentLang].down;
         }
       } catch (e) {
         card.classList.add('down');
@@ -191,7 +200,7 @@
       }
     });
 
-    // 
+    // inicializa
     updateUI();
   </script>
 
