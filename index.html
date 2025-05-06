@@ -8,7 +8,7 @@
   <!-- Content Security Policy -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://api.allorigins.win https://cdnjs.buymeacoffee.com; 
+    script-src 'self' 'unsafe-inline' https://api.allorigins.win https://pagead2.googlesyndication.com;
     connect-src https://api.allorigins.win;
     style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
     font-src 'self' https://cdnjs.cloudflare.com;
@@ -34,12 +34,20 @@
     .down { background:var(--down); }
     @keyframes fadeIn { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
     .ad-slot { width:100%; max-width:400px; margin:1rem 0; height:90px; background:#e9ecef; display:flex; align-items:center; justify-content:center; color:#6c757d; font-size:0.9rem; border:1px dashed #6c757d; }
-    .bmc-button { margin:1rem 0; }
   </style>
 </head>
 <body>
 
-  <div class="ad-slot">Your Google AdSense Top Banner Here</div>
+  <div class="ad-slot">
+    <!-- Google AdSense Top Banner -->
+    <ins class="adsbygoogle"
+         style="display:block; max-width:400px; margin:0 auto;"
+         data-ad-client="ca-pub-9273959048665563"
+         data-ad-slot="1111111111"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <h1>Live or Dead</h1>
   <p id="hint">Type a URL below to check if it is up or down.</p>
@@ -59,18 +67,35 @@
     <span id="msg">Checking…</span>
   </div>
 
-  <div class="ad-slot">Google AdSense Inline Ad Here</div>
-  <div class="bmc-button" id="bmcContainer"></div>
-  <div class="ad-slot">Your Google AdSense Footer Ad Here</div>
+  <div class="ad-slot">
+    <!-- Google AdSense Inline Ad -->
+    <ins class="adsbygoogle"
+         style="display:block; max-width:400px; margin:0 auto;"
+         data-ad-client="ca-pub-9273959048665563"
+         data-ad-slot="2222222222"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <div class="ad-slot">
+    <!-- Google AdSense Footer Ad -->
+    <ins class="adsbygoogle"
+         style="display:block; max-width:400px; margin:0 auto;"
+         data-ad-client="ca-pub-9273959048665563"
+         data-ad-slot="3333333333"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Localization data
       const data = {
         en: { hint:'Type a URL below to check if it is up or down.', check:'Check', invalid:'Invalid hostname.', placeholder:'e.g. example.com', up:'is UP', down:'is DOWN', network:'Network error.' },
         pt: { hint:'Digite uma URL abaixo para verificar se ela está online ou offline.', check:'Checar', invalid:'Host inválido.', placeholder:'ex: exemplo.com', up:'está UP', down:'está DOWN', network:'Erro de rede.' },
         es: { hint:'Escriba una URL abajo para verificar si está en línea o sin conexión.', check:'Comprobar', invalid:'Host inválido.', placeholder:'ej: ejemplo.com', up:'está UP', down:'está DOWN', network:'Error de red.' },
-        fr: { hint:'Entrez une URL ci-dessous pour vérifier si elle est en ligne ou hors ligne.', check:'Vérifier', invalid:'Nom d’hôte non valide.', placeholder:'ex: exemple.com', up:'est UP', down:'est DOWN', network:'Erreur réseau.' }
+        fr: { hint:'Entrez une URL ci-dessous para verificar si ela está em linha ou hors ligne.', check:'Vérifier', invalid:'Nom d’hôte não válido.', placeholder:'ex: exemplo.com', up:'est UP', down:'est DOWN', network:'Erreur réseau.' }
       };
 
       const sel = document.getElementById('langSelect');
@@ -81,7 +106,6 @@
       const msg = document.getElementById('msg');
       const card = document.getElementById('result');
 
-      // Determine default language
       let currentLang = navigator.language.startsWith('pt') ? 'pt'
                       : navigator.language.startsWith('es') ? 'es'
                       : navigator.language.startsWith('fr') ? 'fr'
@@ -103,33 +127,15 @@
       sel.addEventListener('change', () => { currentLang = sel.value; updateUI(); });
       updateUI();
 
-      // Inject BuyMeACoffee widget
-      (function(){
-        var s = document.createElement('script');
-        s.src = 'https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js';
-        s.async = true;
-        s.onerror = () => console.warn('BMC widget failed to load');
-        s.dataset.id = 'YOUR_BMC_ID';
-        s.dataset.name = 'bmc-widget';
-        s.dataset.cfasync = 'false';
-        s.dataset.description = 'Enjoying this tool? Buy me a coffee! ☕';
-        s.dataset.message = 'Thanks for your support!';
-        s.dataset.color = '#FFDD00';
-        s.dataset.position = 'Right';
-        s.dataset.x_margin = '18';
-        s.dataset.y_margin = '18';
-        document.getElementById('bmcContainer').appendChild(s);
-      })();
-
       let busy = false;
       btn.addEventListener('click', async () => {
-        if(busy) return;
+        if (busy) return;
         busy = true;
         setTimeout(() => busy = false, 2000);
 
         const cfg = data[currentLang];
         const raw = input.value.trim();
-        if(!isValidHost(raw)) { alert(cfg.invalid); return; }
+        if (!isValidHost(raw)) { alert(cfg.invalid); return; }
         const site = raw.startsWith('http') ? raw : 'https://' + raw;
 
         card.style.display = 'flex';
@@ -137,12 +143,10 @@
         icon.className = 'fa-solid fa-spinner fa-spin';
         msg.textContent = cfg.check + '…';
 
-                // Use AllOrigins proxy to bypass CORS
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://isitup.org/' + site + '.json');
+        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://isitup.org/' + site + '.json');
         try {
           const res = await fetch(proxyUrl);
-          const wrapper = await res.json();
-          const d = JSON.parse(wrapper.contents);
+          const d = await res.json();
           if (d.status_code === 1) {
             card.classList.add('up');
             icon.className = 'fa-solid fa-circle-check';
