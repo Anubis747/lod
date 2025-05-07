@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title>Live or Dead</title>
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com;
+    connect-src 'self';
+    style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+    font-src 'self' https://cdnjs.cloudflare.com;
+    frame-src https://pagead2.googlesyndication.com;
+    img-src 'self' data: https://*.googlesyndication.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
+
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9273959048665563" crossorigin="anonymous"></script>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 400px;
+      margin: 3rem auto;
+      text-align: center;
+    }
+    label, select, input, button {
+      display: block;
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+    .result-card {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      color: white;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .up   { background: #28a745; }
+    .down { background: #dc3545; }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    footer a {
+      color: #666;
+      text-decoration: underline;
+      margin: 0 0.5rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top AdSense Banner -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-9273959048665563"
+       data-ad-slot="9102667654"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  <h1>Live or Dead</h1>
+
+  <!-- Language selector -->
+  <label id="langLabel" for="langSelect">Choose another language:</label>
+  <select id="langSelect">
+    <option value="en">English</option>
+    <option value="pt">Português</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+  </select>
+
+  <!-- Hint -->
+  <p id="hint">Type a URL below to see if it is up or down.</p>
+
+  <!-- Input & button -->
+  <input id="siteUrl" placeholder="e.g. example.com" />
+  <button id="checkBtn">Check</button>
+
+  <!-- Result -->
+  <div id="result" class="result-card">
+    <i id="icon" class="fa-solid fa-spinner fa-spin"></i>
+    <span id="msg">Checking…</span>
+  </div>
+
+  <!-- Footer with links -->
+  <footer>
+    <a href="about.html">About</a> |
+    <a href="privacy.html">Privacy</a>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    const data = {
+      en: {
+        langLabel: 'Choose another language:',
+        hint: 'Type a URL below to see if it is up or down.',
+        check: 'Check',
+        invalid: 'Invalid hostname.',
+        placeholder: 'e.g. example.com',
+        network: 'Network error.'
+      },
+      pt: {
+        langLabel: 'Escolha outro idioma:',
+        hint: 'Digite uma URL abaixo para verificar se ela está online ou offline.',
+        check: 'Checar',
+        invalid: 'Host inválido.',
+        placeholder: 'ex: exemplo.com',
+        network: 'Erro de rede.'
+      },
+      es: {
+        langLabel: 'Elige otro idioma:',
+        hint: 'Escriba una URL abajo para verificar si está en línea o sin conexión.',
+        check: 'Comprobar',
+        invalid: 'Host inválido.',
+        placeholder: 'ej: ejemplo.com',
+        network: 'Error de red.'
+      },
+      fr: {
+        langLabel: 'Choisissez une autre langue :',
+        hint: 'Entrez une URL ci-dessous pour vérifier si elle est en ligne ou hors ligne.',
+        check: 'Vérifier',
+        invalid: 'Nom d’hôte non valide.',
+        placeholder: 'ex: exemple.com',
+        network: 'Erreur réseau.'
+      }
+    };
+
+    let currentLang = navigator.language.startsWith('pt') ? 'pt'
+                     : navigator.language.startsWith('es') ? 'es'
+                     : navigator.language.startsWith('fr') ? 'fr'
+                     : 'en';
+
+    const langLabel = document.getElementById('langLabel');
+    const select    = document.getElementById('langSelect');
+    const hintEl    = document.getElementById('hint');
+    const btn       = document.getElementById('checkBtn');
+    const input     = document.getElementById('siteUrl');
+    const card      = document.getElementById('result');
+    const icon      = document.getElementById('icon');
+    const msg       = document.getElementById('msg');
+
+    function updateUI() {
+      const cfg = data[currentLang];
+      langLabel.textContent = cfg.langLabel;
+      hintEl.textContent    = cfg.hint;
+      btn.textContent       = cfg.check;
+      input.placeholder     = cfg.placeholder;
+      select.value          = currentLang;
+      card.style.display    = 'none';
+    }
+
+    select.addEventListener('change', e => {
+      currentLang = e.target.value;
+      updateUI();
+    });
+
+    function isValidHost(h) {
+      return /^[a-zA-Z0-9.\-]+(:\d+)?$/.test(h);
+    }
+
+    let busy = false;
+    btn.addEventListener('click', async () => {
+      if (busy) return;
+      busy = true;
+      setTimeout(() => busy = false, 2000);
+
+      const raw = input.value.trim();
+      if (!isValidHost(raw)) {
+        alert(data[currentLang].invalid);
+        return;
+      }
+      const site = raw.startsWith('http') ? raw : 'https://' + raw;
+
+      card.style.display = 'flex';
+      card.classList.remove('up', 'down');
+      icon.className = 'fa-solid fa-spinner fa-spin';
+      msg.textContent = data[currentLang].check + '…';
+
+      try {
+        const res = await fetch(`/api/check?url=${encodeURIComponent(site)}`);
+        const d   = await res.json();
+        if (d.error) throw new Error();
+
+        const host = new URL(site).hostname;
+        const secs = (d.time / 1000).toFixed(1);
+        const texts = {
+          en: { up: `🚀 ${host} is LIVE! (${secs}s)`, down: `❌ ${host} is DOWN!` },
+          pt: { up: `🚀 ${host} está NO AR! (${secs}s)`, down: `❌ ${host} está OFFLINE!` },
+          es: { up: `🚀 ${host} está EN LÍNEA! (${secs}s)`, down: `❌ ${host} está CAÍDO!` },
+          fr: { up: `🚀 ${host} est EN LIGNE ! (${secs}s)`, down: `❌ ${host} est HORS LIGNE !` }
+        };
+
+        if (d.status < 400) {
+          card.classList.add('up');
+          icon.className = 'fa-solid fa-circle-check';
+          msg.textContent = texts[currentLang].up;
+        } else {
+          card.classList.add('down');
+          icon.className = 'fa-solid fa-circle-xmark';
+          msg.textContent = texts[currentLang].down;
+        }
+      } catch {
+        card.classList.add('down');
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        msg.textContent = data[currentLang].network;
+      }
+    });
+
+    updateUI();
+  </script>
+
+</body>
+</html>
