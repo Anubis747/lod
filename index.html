@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Live or Dead</title>
 
-  <!-- Content-Security-Policy (mantemos provisoriamente) -->
+  <!-- Content-Security-Policy -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline'
@@ -22,15 +22,18 @@
     frame-src 'self'
       https://pagead2.googlesyndication.com
       https://*.adtrafficquality.google;
+    fenced-frame-src 'self'
+      https://pagead2.googlesyndication.com
+      https://*.adtrafficquality.google;
     img-src 'self' data:
-      https://*.googlesyndication.com
+      https://*.googglesyndication.google.com
       https://*.adtrafficquality.google;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
   ">
 
-  <!-- AdSense bootstrap (pronto para uso futuro) -->
+  <!-- AdSense bootstrap -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9273959048665563" crossorigin="anonymous"></script>
 
   <!-- FontAwesome & Google Fonts -->
@@ -151,7 +154,6 @@
 <body>
   <div class="container">
     <h1>Live or Dead</h1>
-    <!-- Descrição multilíngue e FAQ -->
     <p id="desc" class="description"></p>
     <section id="faq" class="faq"></section>
 
@@ -185,8 +187,147 @@
   </div>
 
   <script>
-    const data = { /* ... (mantido) ... */ };
-    /* (JS mantido sem alteração) */
+    const data = {
+      en: {
+        langLabel  : 'Choose another language:',
+        hint       : 'Type a URL below to see if it is up or down.',
+        desc       : 'Live or Dead is a free online tool that instantly checks whether any website is accessible or offline in real time. Simply enter the domain or URL you want to test, click the "Check" button, and get an immediate result—complete with server response time. No signup required, no ads in the way, just fast status checks whenever you need them.',
+        faq        : `<h2>FAQ</h2>
+                     <details><summary>What URLs can I test?</summary><p>You can test domains like <code>example.com</code>, subdomains like <code>blog.example.com</code>, or full URLs with protocol (<code>https://example.com</code>).</p></details>
+                     <details><summary>Is Live or Dead really free?</summary><p>Yes! We offer unlimited checks at no cost. Your data is not stored, and there are no hidden fees.</p></details>
+                     <details><summary>How often can I check a site?</summary><p>You can perform as many checks as you want, but to ensure fair use, we limit one request every 2 seconds per IP.</p></details>`,
+        check      : 'Check',
+        invalid    : 'Invalid hostname.',
+        placeholder: 'e.g. example.com',
+        network    : 'Network error.'
+      },
+      pt: {
+        langLabel  : 'Escolha outro idioma:',
+        hint       : 'Digite uma URL abaixo para verificar se ela está online ou offline.',
+        desc       : 'Live or Dead é uma ferramenta online gratuita que verifica instantaneamente se qualquer site está acessível ou fora do ar. Basta inserir o domínio ou URL que deseja testar, clicar em "Checar" e receber o resultado imediato — com o tempo de resposta do servidor. Sem cadastro, sem anúncios atrapalhando, apenas testes rápidos sempre que precisar.',
+        faq        : `<h2>Perguntas Frequentes</h2>
+                     <details><summary>Quais URLs posso testar?</summary><p>Você pode testar domínios como <code>exemplo.com</code>, subdomínios como <code>blog.exemplo.com</code> ou URLs completas com protocolo (<code>https://exemplo.com</code>).</p></details>
+                     <details><summary>O Live ou Dead é realmente gratuito?</summary><p>Sim! Oferecemos verificações ilimitadas sem custo. Nenhum dado é armazenado e não há taxas escondidas.</p></details>
+                     <details><summary>Com que frequência posso checar um site?</summary><p>Você pode realizar quantas verificações quiser, mas para uso justo, limitamos uma solicitação a cada 2 segundos por IP.</p></details>`,
+        check      : 'Checar',
+        invalid    : 'Host inválido.',
+        placeholder: 'ex: exemplo.com',
+        network    : 'Erro de rede.'
+      },
+      es: {
+        langLabel  : 'Elige otro idioma:',
+        hint       : 'Escriba una URL abajo para verificar si está en línea o sin conexão.',
+        desc       : 'Live or Dead es una herramienta gratuita en línea que comprueba al instante si cualquier sitio web está activo o caído. Solo ingresa el dominio ou URL que deseas probar, pulsa "Comprobar" y obtén el resultado al instante — con el tiempo de respuesta del servidor. Sin registro, sin publicidad interrumpiendo, solo comprobaciones rápidas cuando las necesites.',
+        faq        : `<h2>Preguntas Frecuentes</h2>
+                     <details><summary>¿Qué URLs puedo comprobar?</summary><p>Puedes comprobar dominios como <code>ejemplo.com</code>, subdominios como <code>blog.ejemplo.com</code> o URLs completas con protocolo (<code>https://ejemplo.com</code>).</p></details>
+                     <details><summary>¿Live or Dead es realmente gratis?</summary><p>¡Sí! Ofrecemos verificaciones ilimitadas sin costo. No almacenamos ningún dato y no hay cargos ocultos.</p></details>
+                     <details><summary>¿Con qué frecuencia puedo hacer comprobaciones?</summary><p>Puedes realizar tantas comprobaciones como quieras, pero para un uso justo, limitamos una solicitud cada 2 segundos por IP.</p></details>`,
+        check      : 'Comprobar',
+        invalid    : 'Host inválido.',
+        placeholder: 'ej: ejemplo.com',
+        network    : 'Error de red.'
+      },
+      fr: {
+        langLabel  : 'Choisissez une autre langue :',
+        hint       : 'Entrez une URL ci-dessous pour vérifier si elle est en ligne ou hors ligne.',
+        desc       : 'Live or Dead est un outil en ligne gratuit qui vérifie instantanément si un site Web est accessible ou non. Il suffit de saisir le domaine ou l’URL que vous souhaitez tester, cliquer sur "Vérifier" et obtenir le résultat immédiatement — avec le temps de réponse du serveur. Sans inscription, sans publicité gênante, juste des vérifications rapides à tout moment.',
+        faq        : `<h2>FAQ</h2>
+                     <details><summary>Quelles URLs puis-je tester ?</summary><p>Vous pouvez tester des domaines comme <code>exemple.com</code>, des sous-domaines comme <code>blog.exemple.com</code> ou des URLs complètes avec protocole (<code>https://exemple.com</code>).</p></details>
+                     <details><summary>Live or Dead est-il vraiment gratuit ?</summary><p>Oui ! Nous offrons des vérifications illimitées sans frais. Aucune donnée n’est stockée et il n’y a pas de frais cachés.</p></details>
+                     <details><summary>À quelle fréquence puis-je effectuer des vérifications ?</summary><p>Vous pouvez effectuer autant de vérifications que vous le souhaitez, mais pour une utilisation équitable, nous limitons une requête toutes les 2 secondes par IP.</p></details>`,
+        check      : 'Vérifier',
+        invalid    : 'Nom d’hôte non valide.',
+        placeholder: 'ex: exemple.com',
+        network    : 'Erreur réseau.'
+      }
+    };
+
+    let currentLang = navigator.language.startsWith('pt') ? 'pt'
+                     : navigator.language.startsWith('es') ? 'es'
+                     : navigator.language.startsWith('fr') ? 'fr'
+                     : 'en';
+
+    const langLabel = document.getElementById('langLabel');
+    const select    = document.getElementById('langSelect');
+    const hintEl    = document.getElementById('hint');
+    const descEl    = document.getElementById('desc');
+    const faqEl     = document.getElementById('faq');
+    const btn       = document.getElementById('checkBtn');
+    const input     = document.getElementById('siteUrl');
+    const card      = document.getElementById('result');
+    const icon      = document.getElementById('icon');
+    const msg       = document.getElementById('msg');
+
+    function updateUI() {
+      const cfg = data[currentLang];
+      langLabel.textContent = cfg.langLabel;
+      hintEl.textContent    = cfg.hint;
+      descEl.textContent    = cfg.desc;
+      faqEl.innerHTML       = cfg.faq;
+      btn.textContent       = cfg.check;
+      input.placeholder     = cfg.placeholder;
+      select.value          = currentLang;
+      card.style.display    = 'none';
+    }
+
+    select.addEventListener('change', e => {
+      currentLang = e.target.value;
+      updateUI();
+    });
+
+    function isValidHost(h) {
+      return /^[a-zA-Z0-9.\-]+(:\d+)?$/.test(h);
+    }
+
+    let busy = false;
+    btn.addEventListener('click', async () => {
+      if (busy) return;
+      busy = true;
+      setTimeout(() => busy = false, 2000);
+
+      const raw = input.value.trim();
+      if (!isValidHost(raw)) {
+        alert(data[currentLang].invalid);
+        return;
+      }
+      const site = raw.startsWith('http') ? raw : 'https://' + raw;
+
+      card.style.display = 'flex';
+      card.classList.remove('up', 'down');
+      icon.className = 'fa-solid fa-spinner fa-spin';
+      msg.textContent = data[currentLang].check + '…';
+
+      try {
+        const res = await fetch(`/api/check?url=${encodeURIComponent(site)}`);
+        const d   = await res.json();
+        if (d.error) throw new Error();
+
+        const host = new URL(site).hostname;
+        const secs = (d.time / 1000).toFixed(1);
+        const texts = {
+          en: { up: `🚀 ${host} is LIVE! (${secs}s)`, down: `❌ ${host} is DOWN!` },
+          pt: { up: `🚀 ${host} está NO AR! (${secs}s)`, down: `❌ ${host} está OFFLINE!` },
+          es: { up: `🚀 ${host} está EN LÍNEA! (${secs}s)`, down: `❌ ${host} está CAÍDO!` },
+          fr: { up: `🚀 ${host} est EN LIGNE ! (${secs}s)`, down: `❌ ${host} est HORS LIGNE !` }
+        };
+
+        if (d.status < 400) {
+          card.classList.add('up');
+          icon.className = 'fa-solid fa-circle-check';
+          msg.textContent = texts[currentLang].up;
+        } else {
+          card.classList.add('down');
+          icon.className = 'fa-solid fa-circle-xmark';
+          msg.textContent = texts[currentLang].down;
+        }
+      } catch {
+        card.classList.add('down');
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        msg.textContent = data[currentLang].network;
+      }
+    });
+
+    updateUI();
   </script>
 </body>
 </html>
