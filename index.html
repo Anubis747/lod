@@ -199,10 +199,11 @@
     </div>
 
     <!-- Footer -->
-    <footer>
-      <a href="about.html">About</a> |
-      <a href="privacy.html">Privacy</a>
-    </footer>
+<footer>
+  <a href="about.html" id="aboutLink">About</a> |
+  <a href="privacy.html" id="privacyLink">Privacy</a> |
+  <a href="mailto:contact@liveordead.work" id="contactLink">Contact</a>
+</footer>
   </div>
 
   <script>
@@ -218,7 +219,10 @@
         check      : 'Check',
         invalid    : 'Invalid hostname.',
         placeholder: 'e.g. example.com',
-        network    : 'Network error.'
+        network    : 'Network error.',
+        contactText: 'Contact',
+        aboutText: 'About',
+        privacyText: 'Privacy'
       },
       pt: {
         langLabel  : 'Escolha outro idioma:',
@@ -231,7 +235,10 @@
         check      : 'Checar',
         invalid    : 'Host inválido.',
         placeholder: 'ex: exemplo.com',
-        network    : 'Erro de rede.'
+        network    : 'Erro de rede.',
+        contactText: 'Contato',
+        aboutText: 'Sobre',
+        privacyText: 'Privacidade'
       },
       es: {
         langLabel  : 'Elige otro idioma:',
@@ -244,7 +251,10 @@
         check      : 'Comprobar',
         invalid    : 'Host inválido.',
         placeholder: 'ej: ejemplo.com',
-        network    : 'Error de red.'
+        network    : 'Error de red.',
+        contactText: 'Contacto',
+        aboutText: 'Acerca de',
+        privacyText: 'Privacidad'
       },
       fr: {
         langLabel  : 'Choisissez une autre langue :',
@@ -257,7 +267,10 @@
         check      : 'Vérifier',
         invalid    : 'Nom d’hôte non valide.',
         placeholder: 'ex: exemple.com',
-        network    : 'Erreur réseau.'
+        network    : 'Erreur réseau.',
+        contactText: 'Contact',
+        aboutText: 'À propos',
+        privacyText: 'Confidentialité'
       }
     };
 
@@ -287,6 +300,9 @@
       input.placeholder     = cfg.placeholder;
       select.value          = currentLang;
       card.style.display    = 'none';
+      document.getElementById('aboutLink').textContent = data[currentLang].aboutText;
+      document.getElementById('privacyLink').textContent = data[currentLang].privacyText;
+      document.getElementById('contactLink').textContent = data[currentLang].contactText;
     }
 
     select.addEventListener('change', e => {
