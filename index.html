@@ -202,6 +202,7 @@
 <footer>
   <a href="about.html" id="aboutLink">About</a> |
   <a href="privacy.html" id="privacyLink">Privacy</a> |
+  <a href="blog.html" id="blogLink">Blog</a> |
   <a href="mailto:contact@liveordead.work" id="contactLink">Contact</a>
 </footer>
   </div>
@@ -224,7 +225,8 @@
         network    : 'Network error.',
         contactText: 'Contact',
         aboutText: 'About',
-        privacyText: 'Privacy'
+        privacyText: 'Privacy',
+        blogText: 'Blog'
       },
       pt: {
         langLabel  : 'Escolha outro idioma:',
@@ -242,7 +244,8 @@
         network    : 'Erro de rede.',
         contactText: 'Contato',
         aboutText: 'Sobre',
-        privacyText: 'Privacidade'
+        privacyText: 'Privacidade',
+        blogText: 'Blog'
       },
       es: {
         langLabel  : 'Elige otro idioma:',
@@ -260,7 +263,8 @@
         network    : 'Error de red.',
         contactText: 'Contacto',
         aboutText: 'Acerca de',
-        privacyText: 'Privacidad'
+        privacyText: 'Privacidad',
+        blogText: 'Blog'
       },
       fr: {
         langLabel  : 'Choisissez une autre langue :',
@@ -278,7 +282,8 @@
         network    : 'Erreur réseau.',
         contactText: 'Contact',
         aboutText: 'À propos',
-        privacyText: 'Confidentialité'
+        privacyText: 'Confidentialité',
+        blogText: 'Blog'
       }
     };
 
@@ -311,6 +316,7 @@
       document.getElementById('aboutLink').textContent = data[currentLang].aboutText;
       document.getElementById('privacyLink').textContent = data[currentLang].privacyText;
       document.getElementById('contactLink').textContent = data[currentLang].contactText;
+      document.getElementById('blogLink').textContent = data[currentLang].blogText;
     }
 
     select.addEventListener('change', e => {
