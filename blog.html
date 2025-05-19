@@ -29,11 +29,21 @@
       text-align: center;
     }
     p.description {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       font-size: 1rem;
       line-height: 1.6;
       color: #555;
       text-align: center;
+    }
+    label, select {
+      display: block;
+      margin: 0 auto 1.5rem auto;
+      font-size: 1rem;
+      text-align: center;
+    }
+    select {
+      padding: 0.5rem;
+      border-radius: 6px;
     }
     ul {
       list-style: none;
@@ -69,9 +79,14 @@
 <body>
   <div class="container">
     <h1 id="blogTitle">Blog</h1>
-    <p class="description" id="blogIntro">
-      Explore tips, explanations, and insights about website availability, common connectivity issues, and what those cryptic error codes actually mean. Whether you're a developer or just curious about why a site won't load, these articles help you understand the invisible web around you.
-    </p>
+    <p class="description" id="blogIntro"></p>
+    <label for="langSelect" id="langLabel">Choose language:</label>
+    <select id="langSelect">
+      <option value="en">English</option>
+      <option value="pt">Português</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+    </select>
     <ul id="blogList"></ul>
 
     <footer>
@@ -87,6 +102,7 @@
       en: {
         blogTitle: 'Blog',
         blogIntro: 'Explore tips, explanations, and insights about website availability, common connectivity issues, and what those cryptic error codes actually mean. Whether you\'re a developer or just curious about why a site won\'t load, these articles help you understand the invisible web around you.',
+        langLabel: 'Choose language:',
         aboutText: 'About',
         privacyText: 'Privacy',
         contactText: 'Contact',
@@ -99,6 +115,7 @@
       pt: {
         blogTitle: 'Blog',
         blogIntro: 'Explore dicas, explicações e insights sobre disponibilidade de sites, problemas comuns de conexão e o que significam aqueles códigos de erro misteriosos. Seja você um desenvolvedor ou apenas curioso sobre por que um site não carrega, estes artigos vão te ajudar a entender a internet invisível ao seu redor.',
+        langLabel: 'Escolha o idioma:',
         aboutText: 'Sobre',
         privacyText: 'Privacidade',
         contactText: 'Contato',
@@ -111,6 +128,7 @@
       es: {
         blogTitle: 'Blog',
         blogIntro: 'Explora consejos, explicaciones y conocimientos sobre la disponibilidad de sitios web, problemas comunes de conectividad y el significado de esos códigos de error misteriosos. Ya seas desarrollador o simplemente tengas curiosidad por saber por qué no carga una web, estos artículos te ayudarán a entender mejor lo que pasa detrás de escena.',
+        langLabel: 'Elige idioma:',
         aboutText: 'Acerca de',
         privacyText: 'Privacidad',
         contactText: 'Contacto',
@@ -123,6 +141,7 @@
       fr: {
         blogTitle: 'Blog',
         blogIntro: 'Découvrez des conseils, des explications et des informations sur la disponibilité des sites Web, les problèmes de connectivité courants et la signification des fameux codes d\'erreur. Que vous soyez développeur ou simplement curieux, ces articles vous aideront à mieux comprendre ce qui se passe lorsque un site ne se charge pas.',
+        langLabel: 'Choisissez la langue :',
         aboutText: 'À propos',
         privacyText: 'Confidentialité',
         contactText: 'Contact',
@@ -134,27 +153,43 @@
       }
     };
 
-    const userLang = navigator.language.startsWith('pt') ? 'pt'
-                     : navigator.language.startsWith('es') ? 'es'
-                     : navigator.language.startsWith('fr') ? 'fr'
-                     : 'en';
+    let currentLang = localStorage.getItem('blogLang') || (
+      navigator.language.startsWith('pt') ? 'pt' :
+      navigator.language.startsWith('es') ? 'es' :
+      navigator.language.startsWith('fr') ? 'fr' : 'en'
+    );
 
-    const langData = blogData[userLang];
-    document.getElementById('blogTitle').textContent = langData.blogTitle;
-    document.getElementById('blogIntro').textContent = langData.blogIntro;
-    document.getElementById('aboutLink').textContent = langData.aboutText;
-    document.getElementById('privacyLink').textContent = langData.privacyText;
-    document.getElementById('contactLink').textContent = langData.contactText;
+    const langSelect = document.getElementById('langSelect');
+    langSelect.value = currentLang;
 
-    const list = document.getElementById('blogList');
-    langData.posts.forEach(post => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = post.url;
-      a.textContent = post.title;
-      li.appendChild(a);
-      list.appendChild(li);
+    function updateBlogUI() {
+      const langData = blogData[currentLang];
+      document.getElementById('blogTitle').textContent = langData.blogTitle;
+      document.getElementById('blogIntro').textContent = langData.blogIntro;
+      document.getElementById('langLabel').textContent = langData.langLabel;
+      document.getElementById('aboutLink').textContent = langData.aboutText;
+      document.getElementById('privacyLink').textContent = langData.privacyText;
+      document.getElementById('contactLink').textContent = langData.contactText;
+
+      const list = document.getElementById('blogList');
+      list.innerHTML = '';
+      langData.posts.forEach(post => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = post.url;
+        a.textContent = post.title;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    }
+
+    langSelect.addEventListener('change', () => {
+      currentLang = langSelect.value;
+      localStorage.setItem('blogLang', currentLang);
+      updateBlogUI();
     });
+
+    updateBlogUI();
   </script>
 </body>
 </html>
