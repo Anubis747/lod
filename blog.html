@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blog - Live or Dead</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      background: #fff;
+      max-width: 700px;
+      width: 100%;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: 1.75rem;
+      color: #4a90e2;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      margin-bottom: 1rem;
+    }
+    a {
+      color: #4a90e2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #999;
+    }
+    footer a {
+      color: #4a90e2;
+      margin: 0 0.5rem;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="blogTitle">Blog</h1>
+    <ul id="blogList"></ul>
+
+    <footer>
+      <a href="about.html" id="aboutLink">About</a> |
+      <a href="privacy.html" id="privacyLink">Privacy</a> |
+      <a href="mailto:contact@liveordead.work" id="contactLink">Contact</a>
+    </footer>
+  </div>
+
+  <script>
+    const blogData = {
+      en: {
+        blogTitle: 'Blog',
+        aboutText: 'About',
+        privacyText: 'Privacy',
+        contactText: 'Contact',
+        posts: [
+          { title: 'What Does It Mean When a Site Is Down?', url: 'blog/what-does-it-mean-site-down.html' },
+          { title: 'HTTP 503, 404, 500: What Do These Codes Mean?', url: 'blog/http-status-codes-explained.html' },
+          { title: 'Is the Problem With the Site or Your Network?', url: 'blog/is-it-the-site-or-your-network.html' },
+        ]
+      },
+      pt: {
+        blogTitle: 'Blog',
+        aboutText: 'Sobre',
+        privacyText: 'Privacidade',
+        contactText: 'Contato',
+        posts: [
+          { title: 'O que significa quando um site está fora do ar?', url: 'blog/what-does-it-mean-site-down.html' },
+          { title: 'HTTP 503, 404, 500: o que esses códigos de erro significam?', url: 'blog/http-status-codes-explained.html' },
+          { title: 'Como saber se o problema está no site ou na sua rede?', url: 'blog/is-it-the-site-or-your-network.html' },
+        ]
+      },
+      es: {
+        blogTitle: 'Blog',
+        aboutText: 'Acerca de',
+        privacyText: 'Privacidad',
+        contactText: 'Contacto',
+        posts: [
+          { title: '¿Qué significa cuando un sitio está caído?', url: 'blog/what-does-it-mean-site-down.html' },
+          { title: 'HTTP 503, 404, 500: ¿Qué significan estos códigos de error?', url: 'blog/http-status-codes-explained.html' },
+          { title: '¿Es problema del sitio o de tu red?', url: 'blog/is-it-the-site-or-your-network.html' },
+        ]
+      },
+      fr: {
+        blogTitle: 'Blog',
+        aboutText: 'À propos',
+        privacyText: 'Confidentialité',
+        contactText: 'Contact',
+        posts: [
+          { title: 'Que signifie quand un site est en panne ?', url: 'blog/what-does-it-mean-site-down.html' },
+          { title: 'HTTP 503, 404, 500 : Que signifient ces codes ?', url: 'blog/http-status-codes-explained.html' },
+          { title: 'Le problème vient-il du site ou de votre réseau ?', url: 'blog/is-it-the-site-or-your-network.html' },
+        ]
+      }
+    };
+
+    const userLang = navigator.language.startsWith('pt') ? 'pt'
+                   : navigator.language.startsWith('es') ? 'es'
+                   : navigator.language.startsWith('fr') ? 'fr'
+                   : 'en';
+
+    const langData = blogData[userLang];
+    document.getElementById('blogTitle').textContent = langData.blogTitle;
+    document.getElementById('aboutLink').textContent = langData.aboutText;
+    document.getElementById('privacyLink').textContent = langData.privacyText;
+    document.getElementById('contactLink').textContent = langData.contactText;
+
+    const list = document.getElementById('blogList');
+    langData.posts.forEach(post => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = post.url;
+      a.textContent = post.title;
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  </script>
+</body>
+</html>
